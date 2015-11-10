@@ -41,44 +41,30 @@ func MicroplatformEndpointHandler(server *Server) func(w http.ResponseWriter, re
 		contents, err := ioutil.ReadAll(req.Body)
 
 		if err != nil {
-			errResp, _ := json.Marshal(map[string]string{
-				"message": fmt.Sprintf("Failed to read body: %s", err),
-			})
-			w.Write(errResp)
+			w.Write(ErrorResponse(fmt.Sprintf("Failed to read body: %s", err)))
 			return
 		}
 
 		platformRequestBytes, err := hex.DecodeString(fmt.Sprintf("%s", contents))
 
 		if err != nil {
-			errResp, _ := json.Marshal(map[string]string{
-				"message": fmt.Sprintf("Failed to decode body: %s", err),
-			})
-			w.Write(errResp)
+			w.Write(ErrorResponse(fmt.Sprintf("Failed to decode body: %s", err)))
 			return
 		}
 
 		platformRequest := &platform.Request{}
 
 		if err := platform.Unmarshal(platformRequestBytes, platformRequest); err != nil {
-			errResp, _ := json.Marshal(map[string]string{
-				"message": fmt.Sprintf("Failed to unmarshal platform request: %s", err),
-			})
-			w.Write(errResp)
+			w.Write(ErrorResponse(fmt.Sprintf("Failed to unmarshal platform request: %s", err)))
 			return
 		}
-
-		logger.Print(platformRequest.GetUuid())
 
 		if platformRequest.Routing == nil {
 			platformRequest.Routing = &platform.Routing{}
 		}
 
 		if !platform.RouteToSchemeMatches(platformRequest, "microservice") {
-			errResp, _ := json.Marshal(map[string]string{
-				"message": fmt.Sprintf("Unsupported scheme provided: %s", platformRequest.Routing.RouteTo),
-			})
-			w.Write(errResp)
+			w.Write(ErrorResponse(fmt.Sprintf("Unsupported scheme provided: %s", platformRequest.Routing.RouteTo)))
 			return
 		}
 
@@ -87,38 +73,21 @@ func MicroplatformEndpointHandler(server *Server) func(w http.ResponseWriter, re
 		for {
 			select {
 			case response := <-responses:
-				logger.Printf("{socket_id:'%s'} - got a response for request: %s", 12, platformRequest.GetUuid())
-				logger.Printf("%q", response)
-
-				/**
-				response.Uuid = platform.String(strings.Replace(response.GetUuid(), requestUuidPrefix, "", -1))
-
-				// Strip off the tail for routing
-				response.Routing.RouteTo = response.Routing.RouteTo[:len(response.Routing.RouteTo)-1]
+				logger.Printf("Got a response for request:", platformRequest.GetUuid())
 
 				responseBytes, err := platform.Marshal(response)
+
 				if err != nil {
-					log.Printf("[subscriber] failed to marshal platform request: %s", err)
+					w.Write(ErrorResponse(fmt.Sprintf(
+						"failed to marshal platform request: %s - err: %s", platformRequest.GetUuid(), err,
+					)))
 					return
 				}
 
-				if err := so.Emit("request", hex.EncodeToString(responseBytes)); err != nil {
-					log.Printf("[subscriber] failed to send platform request: %s", err)
-					return
-				}
-
-				if response.GetCompleted() {
-					log.Printf("{socket_id:'%s'} - got the final response for request: %s", socketId, platformRequest.GetUuid())
-					return
-				}
-
-				**/
+				w.Write(responseBytes)
 
 			case <-timeout:
-				errResp, _ := json.Marshal(map[string]string{
-					"message": fmt.Sprintf("Got a timeout for request: %s", platformRequest.GetUuid()),
-				})
-				w.Write(errResp)
+				w.Write(ErrorResponse(fmt.Sprintf("Got a timeout for request: %s", platformRequest.GetUuid())))
 				return
 			}
 		}

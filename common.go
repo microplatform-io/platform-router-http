@@ -2,6 +2,7 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"os"
 	"os/signal"
@@ -53,4 +54,12 @@ func manageRouterState(routerConfigList *platform.RouterConfigList) {
 			//publisher.Publish("router.online", routerConfigListBytes)
 		}
 	})
+}
+
+// ErrorResponse - Used by handlers so we can return back errors
+func ErrorResponse(msg string, opts ...map[string]interface{}) (resp []byte) {
+	resp, _ = json.Marshal(map[string]string{
+		"message": msg,
+	})
+	return
 }
