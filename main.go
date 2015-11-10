@@ -41,8 +41,8 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.Handle("/", EnforceHeadersHandler(http.HandlerFunc(MicroplatformEndpointHandler(server))))
-	mux.Handle("/server", EnforceHeadersHandler(http.HandlerFunc(ServerDiscoveryHandler(server))))
+	mux.Handle("/", EnforceHeadersMiddleware(http.HandlerFunc(MicroplatformEndpointHandler(server))))
+	mux.Handle("/server", EnforceHeadersMiddleware(http.HandlerFunc(ServerDiscoveryHandler(server))))
 
 	if err := server.ListenAndServeTLS(mux); err != nil {
 		logger.Fatalf("Failed to listen and serve: %s", err)

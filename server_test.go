@@ -48,7 +48,7 @@ func TestServerDiscoveryHandler(t *testing.T) {
 
 		// Server really does not need to be mocked at all
 		mux := http.NewServeMux()
-		mux.Handle("/server", EnforceHeadersHandler(http.HandlerFunc(ServerDiscoveryHandler(server))))
+		mux.Handle("/server", EnforceHeadersMiddleware(http.HandlerFunc(ServerDiscoveryHandler(server))))
 
 		go func() {
 			err := server.ListenAndServeTLS(mux)
@@ -94,7 +94,7 @@ func TestMicroplatformHandler(t *testing.T) {
 
 		// Server really does not need to be mocked at all
 		mux := http.NewServeMux()
-		mux.Handle("/", EnforceHeadersHandler(http.HandlerFunc(MicroplatformEndpointHandler(server))))
+		mux.Handle("/", EnforceHeadersMiddleware(http.HandlerFunc(MicroplatformEndpointHandler(server))))
 
 		go func() {
 			err := server.ListenAndServeTLS(mux)

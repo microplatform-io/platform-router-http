@@ -11,24 +11,6 @@ import (
 	"github.com/microplatform-io/platform"
 )
 
-// EnforceHeadersHandler - Will enforce headers that are required by microplatform-io
-func EnforceHeadersHandler(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if origin := r.Header.Get("Origin"); origin != "" {
-			w.Header().Add("Access-Control-Allow-Origin", origin)
-		} else {
-			w.Header().Add("Access-Control-Allow-Origin", "null")
-		}
-
-		w.Header().Add("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE")
-		w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
-		w.Header().Add("Access-Control-Allow-Credentials", "true")
-		w.Header().Add("Connection", "keep-alive")
-
-		next.ServeHTTP(w, r)
-	})
-}
-
 // ServerDiscoveryHandler - Will return (based on content type) service discovery details
 func ServerDiscoveryHandler(server *Server) func(w http.ResponseWriter, req *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
