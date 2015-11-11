@@ -56,7 +56,7 @@ func manageRouterState(routerConfigList *platform.RouterConfigList) {
 	})
 }
 
-// GetProtoBytes -
+// GetProtoBytes - Will return platform message as bytes
 func GetProtoBytes(message platform.Message) []byte {
 	protoBytes, _ := platform.Marshal(message)
 	return protoBytes
