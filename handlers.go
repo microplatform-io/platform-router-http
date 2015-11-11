@@ -63,6 +63,10 @@ func MicroplatformEndpointHandler(server *Server) func(w http.ResponseWriter, re
 			platformRequest.Routing = &platform.Routing{}
 		}
 
+		if platformRequest.Routing.RouteFrom != nil {
+			platformRequest.Routing.RouteFrom = []*platform.Route{}
+		}
+
 		if !platform.RouteToSchemeMatches(platformRequest, "microservice") {
 			w.Write(ErrorResponse(fmt.Sprintf("Unsupported scheme provided: %s", platformRequest.Routing.RouteTo)))
 			return
@@ -75,16 +79,21 @@ func MicroplatformEndpointHandler(server *Server) func(w http.ResponseWriter, re
 			case response := <-responses:
 				logger.Printf("Got a response for request:", platformRequest.GetUuid())
 
-				responseBytes, err := platform.Marshal(response)
+				if response.GetRouting().GetRouteTo()[0].GetUri() != "resource:///heartbeat" {
 
-				if err != nil {
-					w.Write(ErrorResponse(fmt.Sprintf(
-						"failed to marshal platform request: %s - err: %s", platformRequest.GetUuid(), err,
-					)))
+					responseBytes, err := platform.Marshal(response)
+
+					if err != nil {
+						w.Write(ErrorResponse(fmt.Sprintf(
+							"failed to marshal platform request: %s - err: %s", platformRequest.GetUuid(), err,
+						)))
+						return
+					}
+
+					w.Write([]byte(hex.EncodeToString(responseBytes)))
 					return
-				}
 
-				w.Write(responseBytes)
+				}
 
 			case <-timeout:
 				w.Write(ErrorResponse(fmt.Sprintf("Got a timeout for request: %s", platformRequest.GetUuid())))
