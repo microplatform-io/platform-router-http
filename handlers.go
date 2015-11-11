@@ -33,10 +33,10 @@ func ServerDiscoveryHandler(server *Server) func(w http.ResponseWriter, req *htt
 	}
 }
 
-// MicroplatformEndpointHandler -
+// MicroplatformEndpointHandler - HTTP proxy request towards gRPC router
 func MicroplatformEndpointHandler(server *Server) func(w http.ResponseWriter, req *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "text/plain")
 
 		contents, err := ioutil.ReadAll(req.Body)
 
@@ -92,7 +92,6 @@ func MicroplatformEndpointHandler(server *Server) func(w http.ResponseWriter, re
 
 					w.Write([]byte(hex.EncodeToString(responseBytes)))
 					return
-
 				}
 
 			case <-timeout:
