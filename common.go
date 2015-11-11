@@ -2,7 +2,7 @@
 package main
 
 import (
-	"encoding/json"
+	"encoding/hex"
 	"log"
 	"os"
 	"os/signal"
@@ -56,10 +56,17 @@ func manageRouterState(routerConfigList *platform.RouterConfigList) {
 	})
 }
 
+// GetProtoBytes -
+func GetProtoBytes(message platform.Message) []byte {
+	protoBytes, _ := platform.Marshal(message)
+	return protoBytes
+}
+
 // ErrorResponse - Used by handlers so we can return back errors
-func ErrorResponse(msg string, opts ...map[string]interface{}) (resp []byte) {
-	resp, _ = json.Marshal(map[string]string{
-		"message": msg,
-	})
-	return
+func ErrorResponse(msg string) []byte {
+	return []byte(hex.EncodeToString(GetProtoBytes(&platform.Request{
+		Routing:   platform.RouteToUri("resource:///router-http/reply/error"),
+		Payload:   GetProtoBytes(&platform.Error{Message: platform.String(msg)}),
+		Completed: platform.Bool(true),
+	})))
 }
