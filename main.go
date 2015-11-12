@@ -28,6 +28,7 @@ func main() {
 
 	server, _ := NewServer(&Options{
 		IPAddr:      platform.Getenv("SERVER_IP", serverIPAddr),
+		MicroIpAddr: serverIPAddr,
 		Port:        serverPort,
 		TLSCertFile: SSL_CERT_FILE,
 		TLSKeyFile:  SSL_KEY_FILE,

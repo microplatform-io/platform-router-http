@@ -37,7 +37,7 @@ func (s *Server) GetRouterURI() string {
 
 // GetFormattedHostAddr - Will return formatted host address that is required by microplatform.
 func (s *Server) GetFormattedHostAddr() string {
-	hostAddress := strings.Replace(s.Options.IPAddr, ".", "-", -1)
+	hostAddress := strings.Replace(s.Options.MicroIpAddr, ".", "-", -1)
 	return fmt.Sprintf("%s.%s", hostAddress, "microplatform.io")
 }
 
