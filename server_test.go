@@ -12,7 +12,6 @@ import (
 	"testing"
 	"time"
 
-	"git.teltech.co/meta/meta-go"
 	"git.teltech.co/teltech/teltech-go.git"
 	"github.com/microplatform-io/platform"
 	. "github.com/smartystreets/goconvey/convey"
@@ -161,11 +160,6 @@ func TestMicroplatformHandler(t *testing.T) {
 				Routing: &platform.Routing{
 					RouteTo: []*platform.Route{&platform.Route{Uri: teltech.String("microservice:///testing/get/http-router")}},
 				},
-				Context: GetProtoBytes(&meta.Context{Requestor: &meta.Requestor{Token: platform.String(testToken)}}),
-				Payload: GetProtoBytes(&meta.TrueCaller{
-					Cookie:      platform.String(testCookie),
-					PhoneNumber: platform.String("+18004445555"),
-				}),
 				Completed: teltech.Bool(true),
 			}
 
@@ -262,11 +256,6 @@ func TestMicroplatformHandler(t *testing.T) {
 				Routing: &platform.Routing{
 					RouteTo: []*platform.Route{&platform.Route{Uri: teltech.String("microservice-invalid:///testing/get/http-router")}},
 				},
-				Context: GetProtoBytes(&meta.Context{Requestor: &meta.Requestor{Token: platform.String(testToken)}}),
-				Payload: GetProtoBytes(&meta.TrueCaller{
-					Cookie:      platform.String(testCookie),
-					PhoneNumber: platform.String("+18004445555"),
-				}),
 				Completed: teltech.Bool(true),
 			}
 
