@@ -14,9 +14,10 @@ var (
 	rabbitPort     = os.Getenv("RABBITMQ_PORT_5672_TCP_PORT")
 	serverProtocol = platform.Getenv("SERVER_PROTOCOL", "https")
 	serverPort     = platform.Getenv("PORT", "443")
-	certFile       = os.Getenv("SSL_CERT")
-	keyFile        = os.Getenv("SSL_KEY")
 
 	publisher  platform.Publisher
 	subscriber platform.Subscriber
+
+	SSL_CERT_FILE = "/tmp/server.cert"
+	SSL_KEY_FILE  = "/tmp/server.key"
 )

@@ -2,7 +2,11 @@
 package main
 
 import (
+	"io/ioutil"
+	"log"
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/microplatform-io/platform"
 )
@@ -14,11 +18,19 @@ func main() {
 		logger.Fatalf("Could not resolve server IP address: %s", err)
 	}
 
+	if err := ioutil.WriteFile(SSL_CERT_FILE, []byte(strings.Replace(os.Getenv("SSL_CERT"), "\\n", "\n", -1)), 0755); err != nil {
+		log.Fatalf("> failed to write SSL cert file: %s", err)
+	}
+
+	if err := ioutil.WriteFile(SSL_KEY_FILE, []byte(strings.Replace(os.Getenv("SSL_KEY"), "\\n", "\n", -1)), 0755); err != nil {
+		log.Fatalf("> failed to write SSL cert file: %s", err)
+	}
+
 	server, _ := NewServer(&Options{
 		IPAddr:      platform.Getenv("SERVER_IP", serverIPAddr),
 		Port:        serverPort,
-		TLSCertFile: certFile,
-		TLSKeyFile:  keyFile,
+		TLSCertFile: SSL_CERT_FILE,
+		TLSKeyFile:  SSL_KEY_FILE,
 	})
 
 	connectionManager := platform.NewAmqpConnectionManager(rabbitUser, rabbitPass, rabbitAddr+":"+rabbitPort, "")
